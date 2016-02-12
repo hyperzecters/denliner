@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="latin1" collation="latin1_swedish_ci">mtrain</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="show" view="colnames">
+<left>489</left>
+<top>5</top>
+<width>115</width>
+<height>190</height>
+<sql_create_table>CREATE TABLE `show` (
+  `id_show` int(10) NOT NULL AUTO_INCREMENT,
+  `from_venue` varchar(20) NOT NULL,
+  `to_venue` varchar(20) NOT NULL,
+  `departure` time NOT NULL,
+  `train` int(5) NOT NULL,
+  `seatname` varchar(5) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'UNBOOKED',
+  PRIMARY KEY (`id_show`),
+  KEY `from_venue` (`from_venue`),
+  KEY `to_venue` (`to_venue`),
+  KEY `train` (`train`),
+  KEY `seatname` (`seatname`),
+  CONSTRAINT `show_ibfk_3` FOREIGN KEY (`from_venue`) REFERENCES `venue` (`venuename`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `show_ibfk_4` FOREIGN KEY (`to_venue`) REFERENCES `venue` (`venuename`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `show_ibfk_6` FOREIGN KEY (`train`) REFERENCES `train` (`id_train`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `show_ibfk_7` FOREIGN KEY (`seatname`) REFERENCES `seat` (`seatname`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="train" view="colnames">
+<left>627</left>
+<top>363</top>
+<width>111</width>
+<height>163</height>
+<sql_create_table>CREATE TABLE `train` (
+  `id_train` int(3) NOT NULL AUTO_INCREMENT,
+  `train_name` varchar(20) NOT NULL,
+  `class` varchar(10) NOT NULL,
+  PRIMARY KEY (`id_train`),
+  KEY `class` (`class`),
+  CONSTRAINT `train_ibfk_1` FOREIGN KEY (`class`) REFERENCES `ticket_type` (`ticket_type`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="seat" view="colnames">
+<left>651</left>
+<top>90</top>
+<width>102</width>
+<height>92</height>
+<sql_create_table>CREATE TABLE `seat` (
+  `seatname` varchar(5) NOT NULL,
+  PRIMARY KEY (`seatname`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="admin" view="colnames">
+<left>9</left>
+<top>340</top>
+<width>103</width>
+<height>156</height>
+<sql_create_table>CREATE TABLE `admin` (
+  `id_admin` int(4) NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL,
+  `username` varchar(15) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `level` int(1) NOT NULL,
+  PRIMARY KEY (`id_admin`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="booking" view="colnames">
+<left>259</left>
+<top>11</top>
+<width>153</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `booking` (
+  `booking_reference` int(10) NOT NULL,
+  `booking_code` int(10) NOT NULL,
+  `id_show` int(10) NOT NULL,
+  `id_user` int(10) NOT NULL,
+  `no_ticket` int(10) NOT NULL,
+  `time_booking` datetime NOT NULL,
+  `status` varchar(11) NOT NULL DEFAULT 'UNCONFIRMED',
+  PRIMARY KEY (`booking_reference`),
+  KEY `id_user` (`id_user`),
+  KEY `no_ticket` (`no_ticket`),
+  KEY `id_show` (`id_show`),
+  CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `booking_ibfk_5` FOREIGN KEY (`no_ticket`) REFERENCES `ticket` (`no_ticket`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `booking_ibfk_6` FOREIGN KEY (`id_show`) REFERENCES `show` (`id_show`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="payment" view="colnames">
+<left>436</left>
+<top>200</top>
+<width>153</width>
+<height>129</height>
+<sql_create_table>CREATE TABLE `payment` (
+  `invoice_number` int(10) NOT NULL,
+  `payment_name` varchar(30) NOT NULL,
+  `booking_reference` int(10) NOT NULL,
+  PRIMARY KEY (`invoice_number`),
+  KEY `booking_reference` (`booking_reference`),
+  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`booking_reference`) REFERENCES `booking` (`booking_reference`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="ticket" view="colnames">
+<left>125</left>
+<top>252</top>
+<width>109</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `ticket` (
+  `no_ticket` int(10) NOT NULL,
+  `ticketname` varchar(10) NOT NULL,
+  `ticket_type` varchar(10) NOT NULL,
+  `stat` varchar(5) NOT NULL DEFAULT 'FALSE',
+  PRIMARY KEY (`no_ticket`),
+  KEY `ticket_type` (`ticket_type`),
+  CONSTRAINT `ticket_ibfk_1` FOREIGN KEY (`ticket_type`) REFERENCES `ticket_type` (`ticket_type`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="ticket_type" view="colnames">
+<left>258</left>
+<top>398</top>
+<width>109</width>
+<height>114</height>
+<sql_create_table>CREATE TABLE `ticket_type` (
+  `ticket_type` varchar(10) NOT NULL,
+  `price` int(20) NOT NULL,
+  PRIMARY KEY (`ticket_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="user" view="colnames">
+<left>4</left>
+<top>63</top>
+<width>103</width>
+<height>248</height>
+<sql_create_table>CREATE TABLE `user` (
+  `id_user` int(10) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(15) NOT NULL,
+  `lastname` varchar(30) NOT NULL,
+  `username` varchar(20) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `address` text NOT NULL,
+  `town` varchar(20) NOT NULL,
+  `country` varchar(20) NOT NULL,
+  `postcode` varchar(5) NOT NULL,
+  `email` varchar(30) NOT NULL,
+  PRIMARY KEY (`id_user`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="venue" view="colnames">
+<left>628</left>
+<top>188</top>
+<width>125</width>
+<height>112</height>
+<sql_create_table>CREATE TABLE `venue` (
+  `venuename` varchar(20) NOT NULL,
+  `venuelocation` varchar(20) NOT NULL,
+  PRIMARY KEY (`venuename`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
